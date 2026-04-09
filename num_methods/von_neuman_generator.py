@@ -9,7 +9,7 @@ n = int(input("sequence length: "))
 k = 0
 pos = 0
 period = False
-result = []
+result = [u]
 
 for _ in range(n):
     u = von_neumann(u)
@@ -21,4 +21,4 @@ for _ in range(n):
     result.append(u)
 
 print(result)
-print(f"period: {k} and n0: {pos+1}" )
+print(f"period: {k} and n0: {pos}" )
