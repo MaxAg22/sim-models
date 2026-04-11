@@ -4,12 +4,12 @@ import random
 def simulate_game():
     "Simulates the game, return 1 on win"
     u = random.random()
-    if u < 0.5:
+    if u < 1/3:
         x = random.random() + random.random()
     else:
         x = random.random() + random.random()+ random.random()
 
-    return 1 if x >= 1 else 0
+    return 1 if x <= 2 else 0
 
 def get_probability(n_sim):
     "Simulates n games and return win probability"
