@@ -16,6 +16,7 @@ def new_var_trans_inv(_lambda, k):
         acumulada += prob
     return i
 
+
 def estimar_prob_mayor_2_ti(n_sim):
     """estima la probabilidad de que X sea mayor que 2"""
     count = 0
