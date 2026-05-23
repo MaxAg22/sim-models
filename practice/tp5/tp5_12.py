@@ -2,7 +2,7 @@ from random import random
 from math import log
 
 
-def calcular_eventos_y_tiempo(T, lamda):
+def calcular_eventos_y_tiempo(lamda, T):
     tiempo_total = 0
     cantidad_eventos = 0
     eventos = []
