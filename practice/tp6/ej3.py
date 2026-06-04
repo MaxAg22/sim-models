@@ -14,7 +14,7 @@ def f1(x):
 def h1(y):
     return f1(pi + pi * y) * pi
 
-
+ 
 def f2(x):
     return 3 / (3 + (x**4))
 

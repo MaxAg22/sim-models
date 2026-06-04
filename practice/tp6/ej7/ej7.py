@@ -34,7 +34,7 @@ def generar_atencion(lamda=13):
     return -log(u) / lamda
 
 
-def ejercicio_7a(tiempo_total):
+def ejercicio_7(tiempo_total):
     t = 0
     n = 0  # En instante t
 
@@ -44,8 +44,11 @@ def ejercicio_7a(tiempo_total):
     Nd = 0
     tiempos_Nd = []
 
+    # quiero devolver el tiempo de servicio de cada solicitud
+    tiempos_servicio = []
+
     # Tiempos
-    T0 = generar_proximo_arribo(t)
+    T0 = generar_proximo_arribo(t_actual=t, t_max=tiempo_total)
     Ta = T0
     Td = float("inf")
 
@@ -57,7 +60,7 @@ def ejercicio_7a(tiempo_total):
             t = Ta
             n += 1
             Na += 1
-            tiempo_prox_llegada = generar_proximo_arribo(t)
+            tiempo_prox_llegada = generar_proximo_arribo(t_actual=t, t_max=tiempo_total)
             Ta = tiempo_prox_llegada
 
             # Si se pasa
@@ -78,6 +81,8 @@ def ejercicio_7a(tiempo_total):
             Nd += 1
             n -= 1
 
+            tiempos_servicio.append(t - tiempos_Na[Nd - 1])
+
             if n == 0:
                 Td = float("inf")
             else:
@@ -87,17 +92,25 @@ def ejercicio_7a(tiempo_total):
             # Registrar
             tiempos_Nd.append(t)
 
+    tiempo_promedio_solicitud = (
+        sum(x for x in tiempos_servicio) / len(tiempos_servicio)
+        if tiempos_servicio
+        else 0
+    )
     return (
         Na,
         tiempos_Na,
         Nd,
         tiempos_Nd,
+        tiempo_promedio_solicitud,
     )
 
 
-res = ejercicio_7a(100)
-print("\n*** Ejercicio 7 ***")
-print(f"Cantidad de solicitudes: {res[0]}")
-print(f"Tiempo de llegada de solicitudes: {res[1]}")
-print(f"Cantidad de solicitudes ateNdidas: {res[2]}")
-print(f"Tiempo de atención de solicitudes: {res[3]}")
+if __name__ == "__main__":
+    res = ejercicio_7(100)
+    print("\n*** Ejercicio 7 ***")
+    print(f"Cantidad de solicitudes: {res[0]}")
+    print(f"Tiempo de llegada de solicitudes: {res[1]}")
+    print(f"Cantidad de solicitudes ateNdidas: {res[2]}")
+    print(f"Tiempo de atención de solicitudes: {res[3]}")
+    print(f"Tiempo de servicio de solicitudes: {res[4]}")
