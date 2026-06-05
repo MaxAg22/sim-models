@@ -44,15 +44,21 @@ def ejercicio_7(tiempo_total):
     Nd = 0
     tiempos_Nd = []
 
-    # quiero devolver el tiempo de servicio de cada solicitud
+    # Evolución de la cola
+    cola = []
+
+    # Ejercicio 7b) Tiempo de servicio de solicitudes
     tiempos_servicio = []
+    # Ejercicio 7c) Solicitud luego del tiempo Ts
+    solicitud_luego_ts = 0
 
     # Tiempos
+    inf = float("inf")
     T0 = generar_proximo_arribo(t_actual=t, t_max=tiempo_total)
     Ta = T0
-    Td = float("inf")
+    Td = inf
 
-    while t < tiempo_total:
+    while Ta < inf or n > 0:
         proximo_evento = min(Ta, Td)
 
         # Caso 1: Llego uNa solicitud
@@ -65,7 +71,7 @@ def ejercicio_7(tiempo_total):
 
             # Si se pasa
             if Ta > tiempo_total:
-                Ta = float("inf")
+                Ta = inf
 
             # Tenemos que ateNder la primer solicitud
             if n == 1:
@@ -82,9 +88,11 @@ def ejercicio_7(tiempo_total):
             n -= 1
 
             tiempos_servicio.append(t - tiempos_Na[Nd - 1])
+            if t > tiempo_total:
+                solicitud_luego_ts = 1
 
             if n == 0:
-                Td = float("inf")
+                Td = inf
             else:
                 tiempo_atencion = generar_atencion()
                 Td = t + tiempo_atencion
@@ -92,25 +100,25 @@ def ejercicio_7(tiempo_total):
             # Registrar
             tiempos_Nd.append(t)
 
+        cola.append((t, n))
+
     tiempo_promedio_solicitud = (
         sum(x for x in tiempos_servicio) / len(tiempos_servicio)
         if tiempos_servicio
         else 0
     )
     return (
-        Na,
-        tiempos_Na,
-        Nd,
-        tiempos_Nd,
         tiempo_promedio_solicitud,
+        solicitud_luego_ts,
+        cola,
     )
 
 
 if __name__ == "__main__":
     res = ejercicio_7(100)
     print("\n*** Ejercicio 7 ***")
-    print(f"Cantidad de solicitudes: {res[0]}")
-    print(f"Tiempo de llegada de solicitudes: {res[1]}")
-    print(f"Cantidad de solicitudes ateNdidas: {res[2]}")
-    print(f"Tiempo de atención de solicitudes: {res[3]}")
-    print(f"Tiempo de servicio de solicitudes: {res[4]}")
+    print(f"Tiempo promedio de servicio: {res[0]:.4f}")
+    print(f"¿Hubo solicitud luego de Ts? {'Sí' if res[1] else 'No'}")
+    print(
+        f"Evolución de la cola (t, n): {res[2][:10]} ..."
+    )  # Mostrar solo los primeros 10 eventos

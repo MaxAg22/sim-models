@@ -1,19 +1,124 @@
-from ej7 import ejercicio_7
-from math import sqrt
+from math import log
+from random import random
 
 
-def monte_carlo(fun, n_min, d):
-    val = fun(100)[4]
-    media = val
-    scuad, n = 0, 1
-    while n < n_min or sqrt(scuad / n) > d:
-        n += 1
-        x = fun(100)[4]
-        val += x
-        media_ant = media
-        media = media_ant + (x - media_ant) / n
-        scuad = scuad * (1 - 1 / (n - 1)) + n * (media - media_ant) ** 2
-    return media, scuad, n, val / n
+def lambda_t(t):
+    """Función de intensidad lambda(t)"""
+    t_aux = t % 10
+    if 0 <= t_aux <= 5:
+        return 3 * t_aux + 4
+    elif 5 < t_aux <= 10:
+        return 34 - 3 * t_aux
 
 
-print(monte_carlo(ejercicio_7, 1000, 0.01)[3])
+def generar_proximo_arribo(t_actual, lamda_max=19, t_max=100):
+    """
+    RetorNa el tiempo (t) del PRÓXIMO arribo
+    basado en el tiempo actual de la simulación.
+    """
+    t = t_actual
+    while True:
+        u = 1 - random()
+        t += -log(u) / lamda_max  # Avanzamos el reloj tentativo
+        if t > t_max:  # Límite de la simulación (T)
+            return float("inf")
+
+        v = random()
+        if v < lambda_t(t) / lamda_max:  # Criterio de adelgazamiento [2]
+            return t  # Aceptamos este tiempo como el próximo arribo
+
+
+def generar_atencion(lamda=13):
+    """Generamos uNa exponencial con tasa lamda"""
+    u = 1 - random()
+    return -log(u) / lamda
+
+
+def ejercicio_7(tiempo_total):
+    t = 0
+    n = 0  # En instante t
+
+    # Solicitudes
+    Na = 0
+    tiempos_Na = []
+    Nd = 0
+    tiempos_Nd = []
+
+    # Evolución de la cola
+    cola = []
+
+    # Ejercicio 7b) Tiempo de servicio de solicitudes
+    tiempos_servicio = []
+    # Ejercicio 7c) Solicitud luego del tiempo Ts
+    solicitud_luego_ts = 0
+
+    # Tiempos
+    inf = float("inf")
+    T0 = generar_proximo_arribo(t_actual=t, t_max=tiempo_total)
+    Ta = T0
+    Td = inf
+
+    while Ta < inf or n > 0:
+        proximo_evento = min(Ta, Td)
+
+        # Caso 1: Llego uNa solicitud
+        if proximo_evento == Ta:
+            t = Ta
+            n += 1
+            Na += 1
+            tiempo_prox_llegada = generar_proximo_arribo(t_actual=t, t_max=tiempo_total)
+            Ta = tiempo_prox_llegada
+
+            # Si se pasa
+            if Ta > tiempo_total:
+                Ta = inf
+
+            # Tenemos que ateNder la primer solicitud
+            if n == 1:
+                tiempo_atencion = generar_atencion()
+                Td = t + tiempo_atencion
+
+            # Registrar
+            tiempos_Na.append(t)
+
+        # Caso 2: Debemos ateNder uNa solicitud
+        elif proximo_evento == Td:
+            t = Td
+            Nd += 1
+            n -= 1
+
+            tiempos_servicio.append(t - tiempos_Na[Nd - 1])
+            if t > tiempo_total:
+                solicitud_luego_ts = 1
+
+            if n == 0:
+                Td = inf
+            else:
+                tiempo_atencion = generar_atencion()
+                Td = t + tiempo_atencion
+
+            # Registrar
+            tiempos_Nd.append(t)
+
+        cola.append((t, n))
+
+    tiempo_promedio_solicitud = (
+        sum(x for x in tiempos_servicio) / len(tiempos_servicio)
+        if tiempos_servicio
+        else 0
+    )
+    return (
+        tiempo_promedio_solicitud,
+        solicitud_luego_ts,
+        cola,
+    )
+
+
+if __name__ == "__main__":
+    res = ejercicio_7(100)
+    print("\n*** Ejercicio 7 ***")
+    print(f"Tiempo promedio de servicio: {res[0]:.4f}")
+    print(f"¿Hubo solicitud luego de Ts? {'Sí' if res[1] else 'No'}")
+    print(
+        f"Evolución de la cola (t, n): {res[2][:10]} ..."
+    )  # Mostrar solo los primeros 10 eventos
