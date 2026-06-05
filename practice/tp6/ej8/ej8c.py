@@ -1,4 +1,4 @@
-from ej7a import ejercicio_7
+from ej8a import ejercicio_8
 from math import sqrt
 
 
@@ -17,4 +17,4 @@ def monte_carlo(fun, n_min, d):
     return media, scuad, n, val / n
 
 
-print(monte_carlo(ejercicio_7, 10000, 0.01)[3])
+print(monte_carlo(ejercicio_8, 10000, 0.05)[3])

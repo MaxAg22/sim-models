@@ -1,5 +1,5 @@
 from math import log
-from random import random
+from random import random, uniform
 
 
 def lambda_t(t):
@@ -34,7 +34,11 @@ def generar_atencion(lamda=13):
     return -log(u) / lamda
 
 
-def ejercicio_7(tiempo_total):
+def generar_descanso():
+    return uniform(0, 0.3)
+
+
+def ejercicio_8(tiempo_total):
     t = 0
     n = 0  # En instante t
 
@@ -44,22 +48,21 @@ def ejercicio_7(tiempo_total):
     Nd = 0
     tiempos_Nd = []
 
-    # Evolución de la cola
     cola = []
+    periodos_descanso = []
+    descansando = False
 
-    # Ejercicio 7b) Tiempo de servicio de solicitudes
+    # Ejercicio 8b) Tiempo de servicio de solicitudes
     tiempos_servicio = []
-    # Ejercicio 7c) Solicitud luego del tiempo Ts
-    solicitud_luego_ts = 0
 
     # Tiempos
     inf = float("inf")
-    T0 = generar_proximo_arribo(t_actual=t, t_max=tiempo_total)
-    Ta = T0
+    Ta = generar_proximo_arribo(t_actual=t, t_max=tiempo_total)
     Td = inf
+    Tr = inf
 
     while Ta < inf or n > 0:
-        proximo_evento = min(Ta, Td)
+        proximo_evento = min(Ta, Td, Tr)
 
         # Caso 1: Llego uNa solicitud
         if proximo_evento == Ta:
@@ -74,31 +77,43 @@ def ejercicio_7(tiempo_total):
                 Ta = inf
 
             # Tenemos que ateNder la primer solicitud
-            if n == 1:
-                tiempo_atencion = generar_atencion()
-                Td = t + tiempo_atencion
+            if n == 1 and not descansando:
+                Td = t + generar_atencion()
 
             # Registrar
             tiempos_Na.append(t)
 
         # Caso 2: Debemos ateNder uNa solicitud
-        elif proximo_evento == Td:
+        elif proximo_evento == Td and not descansando:
             t = Td
             Nd += 1
             n -= 1
 
             tiempos_servicio.append(t - tiempos_Na[Nd - 1])
-            if t > tiempo_total:
-                solicitud_luego_ts = 1
 
             if n == 0:
                 Td = inf
+                Tr = t + generar_descanso()
+                inicio_descanso = t
+                descansando = True
             else:
-                tiempo_atencion = generar_atencion()
-                Td = t + tiempo_atencion
+                Td = t + generar_atencion()
 
             # Registrar
             tiempos_Nd.append(t)
+
+        elif proximo_evento == Tr and descansando:
+            t = Tr
+            periodos_descanso.append(Tr - inicio_descanso)
+            descansando = False
+            Tr = inf
+
+            if n > 0:
+                Td = t + generar_atencion()
+            else:
+                inicio_descanso = t
+                Tr = t + generar_descanso()
+                descansando = True
 
         cola.append((t, n))
 
@@ -107,18 +122,30 @@ def ejercicio_7(tiempo_total):
         if tiempos_servicio
         else 0
     )
+
+    tiempo_promedio_descanso = (
+        sum(x for x in periodos_descanso) / len(periodos_descanso)
+        if periodos_descanso
+        else 0
+    )
+
     return (
-        tiempo_promedio_solicitud,
-        solicitud_luego_ts,
+        tiempos_Na,
+        tiempos_Nd,
+        periodos_descanso,
+        tiempo_promedio_descanso,
         cola,
+        tiempo_promedio_solicitud,
     )
 
 
 if __name__ == "__main__":
-    res = ejercicio_7(100)
-    print("\n*** Ejercicio 7 ***")
-    print(f"Tiempo promedio de servicio: {res[0]:.4f}")
-    print(f"¿Hubo solicitud luego de Ts? {'Sí' if res[1] else 'No'}")
+    res = ejercicio_8(100)
+    print("\n*** Ejercicio 8 ***")
+    # print(f"Tiempos de llegada (Na): {res[0][:10]} ...")
+    # print(f"Tiempos de atención (Nd): {res[1][:10]} ...")
+    print(f"Periodos de descanso: {[float(f'{d:.2f}') for d in res[2][:10]]} ...")
     print(
-        f"Evolución de la cola (t, n): {res[2][:10]} ..."
-    )  # Mostrar solo los primeros 10 eventos
+        f"Evolución de la cola (t, n): {[(float(f'{d:.4f}'), n) for (d, n) in res[4][:10]]} ..."
+    )
+    print(f"Tiempo promedio de servicio: {res[5]:.4f}")

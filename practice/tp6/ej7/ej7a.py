@@ -108,17 +108,23 @@ def ejercicio_7(tiempo_total):
         else 0
     )
     return (
+        tiempos_Na,
+        tiempos_Nd,
+        cola,
         tiempo_promedio_solicitud,
         solicitud_luego_ts,
-        cola,
     )
 
 
 if __name__ == "__main__":
     res = ejercicio_7(100)
     print("\n*** Ejercicio 7 ***")
-    print(f"Tiempo promedio de servicio: {res[0]:.4f}")
-    print(f"¿Hubo solicitud luego de Ts? {'Sí' if res[1] else 'No'}")
     print(
-        f"Evolución de la cola (t, n): {res[2][:10]} ..."
+        f"Tiempos de llegada (Na): {res[0][:10]} ..."
     )  # Mostrar solo los primeros 10 eventos
+    print(
+        f"Tiempos de atención (Nd): {res[1][:10]} ..."
+    )  # Mostrar solo los primeros 10 eventos
+    print(f"Tiempo promedio de servicio: {res[3]:.4f}")
+    print(f"¿Hubo solicitud luego de Ts? {'Sí' if res[4] else 'No'}")
+    print(f"Evolución de la cola (t, n): {res[2][:10]} ...")  # Mostrar
