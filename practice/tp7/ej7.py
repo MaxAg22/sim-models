@@ -1,11 +1,18 @@
 """Kolmogorov-Smirnov"""
 
-from scipy.stats import chi2
-from random import random, uniform
+from math import exp, log
+from random import random
 
 
-def unif(y):
-    return y
+def gen_exponencial(media=1):
+    lamda = 1 / media
+    u = 1 - random()
+    return -log(u) / lamda
+
+
+def exponencial(y, media=1):
+    lamda = 1 / media
+    return 1 - exp(-y * lamda)
 
 
 def generar_uniformes(n):
@@ -44,7 +51,7 @@ def simular_p_valor(n_sim, muestra, fun):
     return pvalor / n_sim
 
 
-muestra = [0.12, 0.18, 0.06, 0.33, 0.72, 0.83, 0.36, 0.27, 0.77, 0.74]
-pvalor = simular_p_valor(10000, muestra, unif)
-print("=== Ejercicio 3 ===")
-print(f"p-valor estimado ~ {pvalor}")
+if __name__ == "__main__":
+    muestra = [gen_exponencial(1) for _ in range(30)]
+    pvalor = simular_p_valor(10000, muestra, exponencial)
+    print(f"p-valor aproximado ~ {pvalor}")
