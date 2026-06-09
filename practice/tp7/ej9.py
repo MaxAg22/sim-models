@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # 2. Estadístico observado
     d_obs = estadisticoD(muestra, media_est)
 
-    # 3. Simulación para parámetros NO especificados (Ejemplo 8.4)
+    # 3. Simulación para parámetros NO especificados
     Nsim = 10000
     hits = 0
     for _ in range(Nsim):
