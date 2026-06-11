@@ -1,5 +1,4 @@
 """Estima una probabilidad utilizando Bootstrap y MonteCarlo"""
-
 import numpy as np
 
 

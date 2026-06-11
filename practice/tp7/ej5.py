@@ -5,7 +5,8 @@ datos = [6, 7, 3, 4, 7, 3, 7, 2, 6, 3, 7, 8, 2, 1, 3, 5, 8, 7]
 n = len(datos)
 
 p_est = np.mean(datos) / 8  # estimador de p
-N = np.array([datos.count(k) for k in range(9)])  # construye las frecs observadas
+# construye las frecs observadas
+N = np.array([datos.count(k) for k in range(9)])
 # tambièn puede ser: np.bincount(datos, minlength=9)
 
 prob = np.array(
