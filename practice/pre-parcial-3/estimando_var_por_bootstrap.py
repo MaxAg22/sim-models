@@ -6,8 +6,6 @@ def calcular_media(datos):
 def calcular_varianza_muestral(datos):
     """Calcula el estadístico S^2 usando el divisor n-1 [3, 4]."""
     n = len(datos)
-    if n < 2:
-        return 0
     media = calcular_media(datos)
     return sum((x - media) ** 2 for x in datos) / (n - 1)
 
