@@ -40,13 +40,7 @@ def ejercicio_2b(frecuencias, probabilidades, NSim):
     t_obs = estadisticoT(frecuencias, probabilidades)
     for k in range(NSim):
         freq = frecuencias_generadas(n, probabilidades)
-
-        # usando np
-        P = np.array(probabilidades)
-        F = np.array(freq)
-        t = np.sum((F - n * P) ** 2 / (n * P))
-
-        # t = estadisticoT(freq, probabilidades)
+        t = estadisticoT(freq, probabilidades)
         if t_obs <= t:
             pvalor = pvalor + 1
     return pvalor / NSim
